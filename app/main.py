@@ -72,11 +72,15 @@ def submit_shipment(content: str, weight: float) -> dict[str, int]:
 
     return {"id": new_id}
 
-@app.get("/shipment/{field}")
-def get_shipment_field(field: str, id: int) -> dict[str, Any]:
-    return {
-        field: shipments[id][field]
+@app.put("/shipment")
+def shipment_update(id: int, content: str, weight: float, status: str) -> dict[str, Any]:
+    shipments[id] = {
+        "content": content,
+        "weight": weight,
+        "status": status
     }
+
+    return shipments[id]
 
 @app.get("/scalar", include_in_schema=False)
 def get_scalar_docs():
