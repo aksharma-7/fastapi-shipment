@@ -55,7 +55,10 @@ def get_shipment(id: int | None = None) -> dict[str, Any]:
 
 
 @app.post("/shipment")
-def submit_shipment(content: str, weight: float) -> dict[str, int]:
+def submit_shipment(data: dict[str, Any]) -> dict[str, Any]:
+    content = data.get("content")
+    weight = data.get("weight")
+
     if weight > 25:
         raise HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
