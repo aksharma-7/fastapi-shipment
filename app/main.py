@@ -1,63 +1,63 @@
-from enum import Enum
 from fastapi import FastAPI, status, HTTPException
 from typing import Any
 from scalar_fastapi import get_scalar_api_reference
 
-from .schemas import Shipment
+from .schemas import Shipment, ShipmentStatus
 
 
 app = FastAPI()
 
-class ShipmentStatus(Enum):
-    placed = "placed"
-    in_transit = "in_transit"
-    out_for_delivery = "out_for_delivery"
-    delivered = "delivered"
-
 
 shipments = {
     12701: {
-        "weight": 0.6,
+        "weight": 5.6,
         "content": "glassware",
-        "status": "placed"
+        "destination": 110001,
+        "status": ShipmentStatus.placed
     },
     12702: {
         "weight": 1.5,
         "content": "electronics",
-        "status": "shipped"
+        "destination": 400001,
+        "status": ShipmentStatus.in_transit
     },
     12703: {
-        "weight": 45.0,
+        "weight": 24.5,
         "content": "furniture",
-        "status": "delivered"
+        "destination": 600001,
+        "status": ShipmentStatus.delivered
     },
     12704: {
-        "weight": 0.2,
+        "weight": 1.2,
         "content": "documents",
-        "status": "processing"
+        "destination": 700001,
+        "status": ShipmentStatus.placed
     },
     12705: {
         "weight": 12.8,
         "content": "kitchenware",
-        "status": "in transit"
+        "destination": 500001,
+        "status": ShipmentStatus.in_transit
     },
     12706: {
         "weight": 2.2,
         "content": "clothing",
-        "status": "packed"
+        "destination": 560001,
+        "status": ShipmentStatus.out_for_delivery
     },
     12707: {
-        "weight": 0.5,
+        "weight": 3.5,
         "content": "books",
-        "status": "cancelled"
+        "destination": 302001,
+        "status": ShipmentStatus.delivered
     }
 }
 
-@app.get("/shipment")
-def get_shipment(id: int | None = None) -> dict[str, Any]:
+@app.get("/shipment", response_model=Shipment)
+def get_shipment(id: int | None = None):
 
     if id not in shipments:
-        return HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Given id does not exist"
         )
@@ -74,7 +74,7 @@ def submit_shipment(shipment: Shipment) -> dict[str, int]:
         "content": shipment.content,
         "weight": shipment.weight,
         "destination": shipment.destination,
-        "status": "placed"
+        "status": ShipmentStatus.placed
     }
 
     return {"id": new_id}
