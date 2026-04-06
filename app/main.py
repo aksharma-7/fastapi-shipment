@@ -4,23 +4,54 @@ from scalar_fastapi import get_scalar_api_reference
 
 app = FastAPI()
 
-@app.get("/shipment/latest")
-def get_latest_shipment() -> dict[str, Any]:
-    return {
-        "id": 12798,
+shipments = {
+    12701: {
         "weight": 0.6,
         "content": "glassware",
         "status": "placed"
+    },
+    12702: {
+        "weight": 1.5,
+        "content": "electronics",
+        "status": "shipped"
+    },
+    12703: {
+        "weight": 45.0,
+        "content": "furniture",
+        "status": "delivered"
+    },
+    12704: {
+        "weight": 0.2,
+        "content": "documents",
+        "status": "processing"
+    },
+    12705: {
+        "weight": 12.8,
+        "content": "kitchenware",
+        "status": "in transit"
+    },
+    12706: {
+        "weight": 2.2,
+        "content": "clothing",
+        "status": "packed"
+    },
+    12707: {
+        "weight": 0.5,
+        "content": "books",
+        "status": "cancelled"
     }
+}
+
+@app.get("/shipment/latest")
+def get_latest_shipment() -> dict[str, Any]:
+    id = max(shipments.keys())
+    return shipments[id]
 
 @app.get("/shipment/{id}")
 def get_shipment(id: int) -> dict[str, Any]:
-    return {
-        "id": id, 
-        "weight": 1.2, 
-        "content": "wooden table", 
-        "status": "in transit"
-    }
+    if id not in shipments:
+        return {"detail": "Given id does not exist"}
+    return shipments[id]
 
 
 @app.get("/scalar", include_in_schema=False)
