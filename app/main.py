@@ -82,6 +82,23 @@ def shipment_update(id: int, content: str, weight: float, status: str) -> dict[s
 
     return shipments[id]
 
+@app.patch("/shipment")
+def patch_shipment(id: int, body: dict[str, Any]) -> dict[str, Any]:
+    shipment = shipments[id]
+
+    # if content:
+    #     shipment["content"] = content
+    # elif weight:
+    #     shipment["weight"] = weight
+    # elif status:
+    #     shipment["status"] = status
+
+    shipment.update(body)
+
+    shipments[id] = shipment
+
+    return shipments[id]
+
 @app.get("/scalar", include_in_schema=False)
 def get_scalar_docs():
     return get_scalar_api_reference(openapi_url=app.openapi_url, title="Scalar API")
