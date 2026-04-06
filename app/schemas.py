@@ -11,8 +11,22 @@ class ShipmentStatus(Enum):
     out_for_delivery = "out_for_delivery"
     delivered = "delivered"
 
-class Shipment(BaseModel):
-    content: str = Field(description="Content of the shipment", max_length=30)
-    weight: float = Field(description="Weight of the shipment in kg", le=25, ge=1)
-    destination: int | None = Field(description="Destination zip code", default_factory=random_destination)
-    status: ShipmentStatus = Field(description="Status of the shipment")
+# class ShipmentRead(BaseModel):
+#     content: str = Field(description="Content of the shipment", max_length=30)
+#     weight: float = Field(description="Weight of the shipment in kg", le=25, ge=1)
+#     destination: int | None = Field(description="Destination zip code", default_factory=random_destination)
+#     status: ShipmentStatus = Field(description="Status of the shipment")
+
+class BaseShipment(BaseModel):
+    content: str
+    weight: float = Field(le=25)
+    destination: int
+
+class ShipmentRead(BaseShipment):
+    status: ShipmentStatus
+
+class ShipmentCreate(BaseShipment):
+    pass
+
+class ShipmentUpdate(BaseModel):
+    status: ShipmentStatus

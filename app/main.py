@@ -2,7 +2,7 @@ from fastapi import FastAPI, status, HTTPException
 from typing import Any
 from scalar_fastapi import get_scalar_api_reference
 
-from .schemas import Shipment, ShipmentStatus
+from .schemas import ShipmentStatus, ShipmentRead, ShipmentCreate, ShipmentUpdate
 
 
 app = FastAPI()
@@ -53,7 +53,7 @@ shipments = {
     }
 }
 
-@app.get("/shipment", response_model=Shipment)
+@app.get("/shipment", response_model=ShipmentRead)
 def get_shipment(id: int | None = None):
 
     if id not in shipments:
@@ -66,7 +66,7 @@ def get_shipment(id: int | None = None):
 
 
 @app.post("/shipment")
-def submit_shipment(shipment: Shipment) -> dict[str, int]:
+def submit_shipment(shipment: ShipmentCreate) -> dict[str, int]:
 
     new_id = max(shipments.keys()) + 1
 
@@ -80,8 +80,8 @@ def submit_shipment(shipment: Shipment) -> dict[str, int]:
     return {"id": new_id}
 
 
-@app.patch("/shipment")
-def update_shipment(id: int, body: dict[str, ShipmentStatus]) -> dict[str, Any]:
+@app.patch("/shipment", response_model=ShipmentRead)
+def update_shipment(id: int, body: ShipmentUpdate):
     shipment = shipments[id]
 
     # if content:
