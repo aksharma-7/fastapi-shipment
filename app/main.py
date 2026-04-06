@@ -72,18 +72,9 @@ def submit_shipment(content: str, weight: float) -> dict[str, int]:
 
     return {"id": new_id}
 
-@app.put("/shipment")
-def shipment_update(id: int, content: str, weight: float, status: str) -> dict[str, Any]:
-    shipments[id] = {
-        "content": content,
-        "weight": weight,
-        "status": status
-    }
-
-    return shipments[id]
 
 @app.patch("/shipment")
-def patch_shipment(id: int, body: dict[str, Any]) -> dict[str, Any]:
+def update_shipment(id: int, body: dict[str, Any]) -> dict[str, Any]:
     shipment = shipments[id]
 
     # if content:
@@ -98,6 +89,14 @@ def patch_shipment(id: int, body: dict[str, Any]) -> dict[str, Any]:
     shipments[id] = shipment
 
     return shipments[id]
+
+
+@app.delete("/shipment")
+def delete_shipment(id: int) -> dict[str, str]:
+    shipments.pop(id)
+
+    return {"message": "Shipment deleted successfully"}
+
 
 @app.get("/scalar", include_in_schema=False)
 def get_scalar_docs():
