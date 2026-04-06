@@ -55,10 +55,7 @@ def get_shipment(id: int | None = None) -> dict[str, Any]:
 
 
 @app.post("/shipment")
-def submit_shipment(data: dict[str, Any]) -> dict[str, Any]:
-    content = data.get("content")
-    weight = data.get("weight")
-
+def submit_shipment(content: str, weight: float) -> dict[str, int]:
     if weight > 25:
         raise HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
@@ -74,6 +71,12 @@ def submit_shipment(data: dict[str, Any]) -> dict[str, Any]:
     }
 
     return {"id": new_id}
+
+@app.get("/shipment/{field}")
+def get_shipment_field(field: str, id: int) -> dict[str, Any]:
+    return {
+        field: shipments[id][field]
+    }
 
 @app.get("/scalar", include_in_schema=False)
 def get_scalar_docs():
