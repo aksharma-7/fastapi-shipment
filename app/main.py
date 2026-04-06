@@ -42,17 +42,16 @@ shipments = {
     }
 }
 
-@app.get("/shipment/latest")
-def get_latest_shipment() -> dict[str, Any]:
-    id = max(shipments.keys())
-    return shipments[id]
+@app.get("/shipment")
+def get_shipment(id: int | None = None) -> dict[str, Any]:
+    if not id:
+        id = max(shipments.keys())
+        return shipments[id]
 
-@app.get("/shipment/{id}")
-def get_shipment(id: int) -> dict[str, Any]:
     if id not in shipments:
         return {"detail": "Given id does not exist"}
-    return shipments[id]
 
+    return shipments[id]
 
 @app.get("/scalar", include_in_schema=False)
 def get_scalar_docs():
