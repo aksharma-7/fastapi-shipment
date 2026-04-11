@@ -32,11 +32,18 @@ cursor.execute("""
 # """)
 
 cursor.execute("""
-    DELETE FROM shipment
+    UPDATE shipment
+    SET status = "delivered"
     WHERE id = 12701
 """)
 
-print(cursor.fetchall())
+# cursor.execute("""
+#     DELETE FROM shipment
+#     WHERE id = 12701
+# """)
+
+
+# print(cursor.fetchall())
 
 
 connection.commit()
