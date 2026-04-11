@@ -6,7 +6,7 @@ cursor = connection.cursor()
 
 cursor.execute("""
     CREATE TABLE IF NOT EXISTS shipment (
-        id INTEGER,
+        id INTEGER PRIMARY KEY,
         content TEXT,
         weight REAL,
         status TEXT
@@ -25,13 +25,18 @@ cursor.execute("""
 #         (12707, "books", 3.5, "delivered")
 # """)
 
+# cursor.execute("""
+#     SELECT *
+#     FROM shipment
+#     WHERE id = 12701
+# """)
+
 cursor.execute("""
-    SELECT *
-    FROM shipment
+    DELETE FROM shipment
     WHERE id = 12701
 """)
 
-print(cursor.fetchone())
+print(cursor.fetchall())
 
 
 connection.commit()
