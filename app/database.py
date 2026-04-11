@@ -13,5 +13,18 @@ cursor.execute("""
     )
 """)
 
+cursor.execute("""
+    INSERT INTO shipment
+    VALUES
+        (12701, "glassware", 5.6, "placed"),
+        (12702, "electronics", 1.5, "in_transit"),
+        (12703, "furniture", 24.5, "delivered"),
+        (12704, "documents", 1.2, "placed"),
+        (12705, "kitchenware", 12.8, "in_transit"),
+        (12706, "clothing", 2.2, "out_for_delivery"),
+        (12707, "books", 3.5, "delivered")
+""")
 
+
+connection.commit()
 connection.close()
