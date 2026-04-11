@@ -1,20 +1,22 @@
+from typing import Any
+from app.schemas import ShipmentCreate
 from app.schemas import ShipmentUpdate
 import sqlite3
 
 class Database:
     def __init__(self):
-        self.conn = sqlite3.connect("sqlite.db")
+        self.conn = sqlite3.connect("sqlite.db", check_same_thread=False)
         self.cur = self.conn.cursor()
-        self.create_table("shipment")
+        self.create_table()
 
-    def create_table(self, name: str):
+    def create_table(self):
         self.cur.execute("""
-            CREATE TABLE IF NOT EXISTS ? (
+            CREATE TABLE IF NOT EXISTS shipment (
                 id INTEGER PRIMARY KEY,
                 content TEXT,
                 weight REAL,
                 status TEXT
-            )""", (name,))
+            )""")
     
     def create(self, shipment: ShipmentCreate) -> int:
         self.cur.execute("SELECT MAX(id) FROM shipment")
@@ -55,14 +57,14 @@ class Database:
             "status": row[3]
         }
 
-    def update(self, shipment: ShipmentUpdate) -> dict[str, Any]:
+    def update(self, id: int, shipment: ShipmentUpdate) -> dict[str, Any]:
         self.cur.execute("""
             UPDATE shipment
             SET status = :status
             WHERE id = :id
         """, {
             "id": id,
-            **shipment.model_dump()
+            "status": shipment.status.value
         })
 
         self.conn.commit()
@@ -81,3 +83,4 @@ class Database:
 
     def close(self):
         self.conn.close()
+
