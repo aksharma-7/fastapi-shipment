@@ -31,11 +31,14 @@ cursor.execute("""
 #     WHERE id = 12701
 # """)
 
+status = "delivered"
+id = 12701
+
 cursor.execute("""
     UPDATE shipment
-    SET status = "delivered"
-    WHERE id = 12701
-""")
+    SET status = :status
+    WHERE id = :id
+""", {"status": status, "id": id})
 
 # cursor.execute("""
 #     DELETE FROM shipment
