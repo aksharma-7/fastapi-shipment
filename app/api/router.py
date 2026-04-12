@@ -1,16 +1,15 @@
-from app.services.shipment import ShipmentService
 from app.api.schemas.shipment import ShipmentUpdate, ShipmentCreate
 from fastapi import APIRouter, HTTPException, status
-from app.database.session import SessionDep
 from app.database.models import Shipment
+from .dependencies import ServiceDep
 
 router = APIRouter()
 
 
 @router.get("/shipment", response_model=Shipment)
-async def get_shipment(id: int, session: SessionDep):
+async def get_shipment(id: int, service: ServiceDep):
 
-    shipment = ShipmentService(session).get(id)
+    shipment = await service.get(id)
 
     if shipment is None:
         raise HTTPException(
@@ -21,14 +20,16 @@ async def get_shipment(id: int, session: SessionDep):
 
 
 @router.post("/shipment")
-async def submit_shipment(shipment: ShipmentCreate, session: SessionDep) -> Shipment:
-    new_shipment = await ShipmentService(session).add(shipment)
+async def submit_shipment(shipment: ShipmentCreate, service: ServiceDep) -> Shipment:
+    new_shipment = await service.add(shipment)
 
     return new_shipment
 
 
 @router.patch("/shipment", response_model=Shipment)
-async def update_shipment(id: int, shipment_update: ShipmentUpdate, session: SessionDep):
+async def update_shipment(
+    id: int, shipment_update: ShipmentUpdate, service: ServiceDep
+):
     update = shipment_update.model_dump(exclude_none=True)
 
     if not update:
@@ -36,13 +37,13 @@ async def update_shipment(id: int, shipment_update: ShipmentUpdate, session: Ses
             status_code=status.HTTP_400_BAD_REQUEST, detail="No update data provided"
         )
 
-    shipment = ShipmentService(session).update(shipment_update)
+    shipment = await service.update(id, update)
 
     return shipment
 
- 
+
 @router.delete("/shipment")
-async def delete_shipment(id: int, session: SessionDep) -> dict[str, str]:
-    await ShipmentService(session).delete(id)
+async def delete_shipment(id: int, service: ServiceDep) -> dict[str, str]:
+    await service.delete(id)
 
     return {"detail": "Shipment deleted successfully"}

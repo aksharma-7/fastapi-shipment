@@ -1,13 +1,14 @@
-from app.api.schemas.schemas import ShipmentUpdate
+from app.api.schemas.shipment import ShipmentUpdate
 from datetime import timedelta
 from datetime import datetime
 from app.database.models import ShipmentStatus
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.api.schemas.schemas import ShipmentCreate
+from app.api.schemas.shipment import ShipmentCreate
 from app.database.models import Shipment
 
+
 class ShipmentService:
-    def __int__(self, session: AsyncSession):
+    def __init__(self, session: AsyncSession):
         self.session = session
 
     async def get(self, id: int) -> Shipment:
@@ -26,11 +27,23 @@ class ShipmentService:
 
         return new_shipment
 
-    async def update(self, shipment_update: ShipmentUpdate) -> Shipment:
+    async def update(self, id: int, shipment_update: dict) -> Shipment:
         shipment = await self.get(id)
+
+        estimated_delivery = shipment_update.get("estimated_delivery")
+
+        if estimated_delivery and estimated_delivery.tzinfo:
+            shipment_update["estimated_delivery"] = estimated_delivery.replace(
+                tzinfo=None
+            )
+
+        # Apply the dictionary updates to your SQLAlchemy model instance
+        for key, value in shipment_update.items():
+            setattr(shipment, key, value)
+
         shipment.sqlmodel_update(shipment_update)
 
-        self.session.add(shipment)  
+        self.session.add(shipment)
         await self.session.commit()
         await self.session.refresh(shipment)
 
@@ -41,5 +54,3 @@ class ShipmentService:
 
         await self.session.delete(shipment)
         await self.session.commit()
-
-    

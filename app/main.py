@@ -7,7 +7,7 @@ from scalar_fastapi import get_scalar_api_reference
 
 @asynccontextmanager
 async def lifespan_handler(app: FastAPI):
-    create_db_tables()
+    await create_db_tables()
     yield
 
 

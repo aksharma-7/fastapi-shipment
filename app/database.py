@@ -1,7 +1,7 @@
 from contextlib import contextmanager
 from typing import Any
-from app.api.schemas.schemas import ShipmentCreate
-from app.api.schemas.schemas import ShipmentUpdate
+from app.api.schemas.shipment import ShipmentCreate
+from app.api.schemas.shipment import ShipmentUpdate
 import sqlite3
 
 class Database:

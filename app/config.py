@@ -18,4 +18,4 @@ class DatabaseSettings(BaseSettings):
         return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
 settings = DatabaseSettings()
-print(settings.POSTGRES_URL())
+print(settings.POSTGRES_URL)
