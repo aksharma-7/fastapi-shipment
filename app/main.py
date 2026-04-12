@@ -1,10 +1,13 @@
+from app.database.session import get_session
+from fastapi import Depends
+from sqlmodel import Session
 from app.database.session import create_db_tables
 from contextlib import asynccontextmanager
 from .database import Database
 from fastapi import FastAPI, status, HTTPException
 from typing import Any
 from scalar_fastapi import get_scalar_api_reference
-from rich import print, panel
+from app.database.models import Shipment
 
 from .schemas import ShipmentStatus, ShipmentRead, ShipmentCreate, ShipmentUpdate
 
@@ -19,9 +22,9 @@ app = FastAPI(lifespan=lifespan_handler)
 db = Database()
 
 @app.get("/shipment", response_model=ShipmentRead)
-def get_shipment(id: int | None = None):
+def get_shipment(id: int | None = None, session: Session = Depends(get_session)):
 
-    shipment = db.get(id)
+    shipment = session.get(Shipment, id)
 
     if shipment is None:
         raise HTTPException(
