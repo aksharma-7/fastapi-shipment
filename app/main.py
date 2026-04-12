@@ -1,12 +1,19 @@
+from app.database.session import create_db_tables
+from contextlib import asynccontextmanager
 from .database import Database
 from fastapi import FastAPI, status, HTTPException
 from typing import Any
 from scalar_fastapi import get_scalar_api_reference
+from rich import print, panel
 
 from .schemas import ShipmentStatus, ShipmentRead, ShipmentCreate, ShipmentUpdate
 
+@asynccontextmanager
+async def lifespan_handler(app: FastAPI):
+    create_db_tables()
+    yield
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan_handler)
 
 
 db = Database()
