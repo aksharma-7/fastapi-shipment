@@ -1,8 +1,5 @@
-from app.api.schemas.shipment import ShipmentUpdate
-from datetime import timedelta
-from datetime import datetime
-from app.database.models import ShipmentStatus
-from app.api.schemas.shipment import ShipmentCreate
+from app.services.shipment import ShipmentService
+from app.api.schemas.shipment import ShipmentUpdate, ShipmentCreate
 from fastapi import APIRouter, HTTPException, status
 from app.database.session import SessionDep
 from app.database.models import Shipment
@@ -13,7 +10,7 @@ router = APIRouter()
 @router.get("/shipment", response_model=Shipment)
 async def get_shipment(id: int, session: SessionDep):
 
-    shipment = await session.get(Shipment, id)
+    shipment = ShipmentService(session).get(id)
 
     if shipment is None:
         raise HTTPException(
@@ -24,18 +21,10 @@ async def get_shipment(id: int, session: SessionDep):
 
 
 @router.post("/shipment")
-async def submit_shipment(shipment: ShipmentCreate, session: SessionDep) -> dict[str, int]:
-    new_shipment = Shipment(
-        **shipment.model_dump(),
-        status=ShipmentStatus.placed,
-        estimated_delivery=datetime.now() + timedelta(days=3),
-    )
+async def submit_shipment(shipment: ShipmentCreate, session: SessionDep) -> Shipment:
+    new_shipment = await ShipmentService(session).add(shipment)
 
-    session.add(new_shipment)
-    await session.commit()
-    await session.refresh(new_shipment)
-
-    return {"id": new_shipment.id}
+    return new_shipment
 
 
 @router.patch("/shipment", response_model=Shipment)
@@ -47,21 +36,13 @@ async def update_shipment(id: int, shipment_update: ShipmentUpdate, session: Ses
             status_code=status.HTTP_400_BAD_REQUEST, detail="No update data provided"
         )
 
-    shipment = await session.get(Shipment, id)
-    shipment.sqlmodel_update(update)
-
-    session.add(shipment)
-    await session.commit()
-    await session.refresh(shipment)
+    shipment = ShipmentService(session).update(shipment_update)
 
     return shipment
 
-
+ 
 @router.delete("/shipment")
 async def delete_shipment(id: int, session: SessionDep) -> dict[str, str]:
-    shipment = await session.get(Shipment, id)
-
-    await session.delete(shipment)
-    await session.commit()
+    await ShipmentService(session).delete(id)
 
     return {"detail": "Shipment deleted successfully"}
