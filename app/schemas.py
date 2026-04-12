@@ -1,3 +1,4 @@
+from datetime import datetime
 from app.database.models import ShipmentStatus
 from pydantic import BaseModel, Field
 from random import randint
@@ -14,13 +15,15 @@ def random_destination():
 class BaseShipment(BaseModel):
     content: str
     weight: float = Field(le=25)
-    # destination: int
+    destination: int
 
 class ShipmentRead(BaseShipment):
     status: ShipmentStatus
+    estimated_delivery: datetime
 
 class ShipmentCreate(BaseShipment):
     pass
 
 class ShipmentUpdate(BaseModel):
-    status: ShipmentStatus
+    status: ShipmentStatus | None = Field(default=None)
+    estimated_delivery: datetime | None = Field(default=None)

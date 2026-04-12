@@ -1,5 +1,5 @@
+from sqlmodel import Field
 from datetime import datetime
-from pydantic import Field
 from enum import Enum
 from sqlmodel import SQLModel
 
@@ -10,9 +10,9 @@ class ShipmentStatus(Enum):
     delivered = "delivered"
 
 class Shipment(SQLModel, table=True):
-    __table__name = "shipment"
-    
-    id: int = Field(default=None, primary_key=True)
+    __tablename__ = "shipment"   # ✅ FIXED
+
+    id: int | None = Field(default=None, primary_key=True)
     content: str
     weight: float = Field(le=25)
     destination: str
