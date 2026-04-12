@@ -9,7 +9,7 @@ class ShipmentStatus(Enum):
     out_for_delivery = "out_for_delivery"
     delivered = "delivered"
 
-class Shipment(SQLModel):
+class Shipment(SQLModel, table=True):
     __table__name = "shipment"
     
     id: int = Field(primary_key=True)
