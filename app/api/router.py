@@ -3,10 +3,10 @@ from fastapi import APIRouter, HTTPException, status
 from app.database.models import Shipment
 from .dependencies import ServiceDep
 
-router = APIRouter()
+router = APIRouter(prefix="/shipment", tags=["Shipment"])
 
 
-@router.get("/shipment", response_model=Shipment)
+@router.get("/", response_model=Shipment)
 async def get_shipment(id: int, service: ServiceDep):
 
     shipment = await service.get(id)
@@ -19,14 +19,14 @@ async def get_shipment(id: int, service: ServiceDep):
     return shipment
 
 
-@router.post("/shipment")
+@router.post("/")
 async def submit_shipment(shipment: ShipmentCreate, service: ServiceDep) -> Shipment:
     new_shipment = await service.add(shipment)
 
     return new_shipment
 
 
-@router.patch("/shipment", response_model=Shipment)
+@router.patch("/", response_model=Shipment)
 async def update_shipment(
     id: int, shipment_update: ShipmentUpdate, service: ServiceDep
 ):
@@ -42,7 +42,7 @@ async def update_shipment(
     return shipment
 
 
-@router.delete("/shipment")
+@router.delete("/")
 async def delete_shipment(id: int, service: ServiceDep) -> dict[str, str]:
     await service.delete(id)
 
